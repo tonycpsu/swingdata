@@ -1,0 +1,36 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    baseName = 'SwingData'
+    version =  '0.1.0'
+}
+
+mainClassName = "org.tonyc.swingdata.Analysis"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile "org.apache.commons:commons-csv:1.8"
+    testCompile group: 'org.testng', name: 'testng', version: '7.1.0'
+}
+
+task swingDataAnalysis(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main = "org.tonyc.swingdata.Analysis"
+    if (project.hasProperty("swingCsvFile")) {
+        args += ["${swingCsvFile}"]
+    } else {
+        args += ["latestSwing.csv"]
+    }
+}
+
+
+test {
+    useTestNG()
+}
