@@ -41,3 +41,12 @@ Testing
 To run the unit tests:
 
     $ ./gradlew test
+
+Bonus Question
+==============
+
+I don't remember a lot from physics classes, but I do remember conservation of
+momentum, which says that the impact of the ball on the bat will cause the bat
+to slow down.  I would expect this to be reflected in the accelerometer data.
+Just from eyeballing the CSV, it looks like the accelerometer values
+peak around index 876, so I think that's where the impact is.
