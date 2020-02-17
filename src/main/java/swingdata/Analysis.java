@@ -2,7 +2,6 @@ package org.tonyc.swingdata;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.*;
 
 public class Analysis {
 
