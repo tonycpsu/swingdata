@@ -4,6 +4,7 @@ import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.testng.Assert;
 import java.io.*;
+import java.util.*;
 import java.util.Optional;
 
 import org.tonyc.swingdata.SwingData;
@@ -142,25 +143,26 @@ public class TestSwingDataAnalysis {
     @Test
     public void testSearchMultiContinuityWithinRange() throws IOException
     {
-        int [] res = Analysis.searchMultiContinuityWithinRange(
+        List<List<Integer>> res = Analysis.searchMultiContinuityWithinRange(
             swing.az, 0, 14, -1, 0, 1);
-        Assert.assertEquals(res[0], 4);
-        Assert.assertEquals(res[1], 6);
 
-        res = Analysis.searchMultiContinuityWithinRange(
-            swing.az, 0, 14, -1, -0.9, 1);
-        Assert.assertEquals(res[0], 4);
-        Assert.assertEquals(res[1], 6);
+
+        Assert.assertEquals(res.size(), 3);
+        Assert.assertEquals(res.get(0), Arrays.asList(4, 6));
+        Assert.assertEquals(res.get(1), Arrays.asList(5, 6));
+        Assert.assertEquals(res.get(2), Arrays.asList(6, 6));
 
         res = Analysis.searchMultiContinuityWithinRange(
             swing.wx, 0, 14, 4.6, 4.7, 2);
-        Assert.assertEquals(res[0], 2);
-        Assert.assertEquals(res[1], 3);
+
+        Assert.assertEquals(res.size(), 1);
+        Assert.assertEquals(res.get(0), Arrays.asList(2, 3));
+
 
         res = Analysis.searchMultiContinuityWithinRange(
             swing.wy, 0, 14, -13.5, -13, 1);
-        Assert.assertEquals(res[0], 14);
-        Assert.assertEquals(res[1], 14);
+        Assert.assertEquals(res.size(), 1);
+        Assert.assertEquals(res.get(0), Arrays.asList(14, 14));
 
     }
 
@@ -168,10 +170,9 @@ public class TestSwingDataAnalysis {
     public void testSearchMultiContinuityWithinRangeNoResults()
         throws IOException {
 
-        int [] res = Analysis.searchMultiContinuityWithinRange(
+        List<List<Integer>> res = Analysis.searchMultiContinuityWithinRange(
             swing.ay, 0, 14, 0, 0.1, 1);
-        Assert.assertEquals(res[0], -1);
-        Assert.assertEquals(res[1], -1);
+        Assert.assertEquals(res.size(), 0);
 
     }
 

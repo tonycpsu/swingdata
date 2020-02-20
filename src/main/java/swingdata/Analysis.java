@@ -31,7 +31,7 @@ public class Analysis {
             Arrays.toString(
                 searchMultiContinuityWithinRange(
                     swing.az, 0, 14, -1, 0, 1
-                )
+                ).toArray()
             )
         );
 
@@ -123,7 +123,7 @@ public class Analysis {
 
     }
 
-    public static int[] searchMultiContinuityWithinRange(
+    public static List<List<Integer>> searchMultiContinuityWithinRange(
         ArrayList<Double> data,
         int indexBegin,
         int indexEnd,
@@ -133,7 +133,7 @@ public class Analysis {
     {
         int i=0, j=0;
         int first = -1;
-        int[] ret = {-1, -1};
+        List<List<Integer>> ret = new ArrayList<List<Integer>>();
 
       window:
         // iterate through the input data, stop when window hits the end
@@ -149,9 +149,8 @@ public class Analysis {
             }
             if (j >= winLength)
             {
-                ret[0] = i;
-                ret[1] = i+j-1;
-                break window;
+                List<Integer> l = Arrays.asList(i, i+j-1);
+                ret.add(l);
             }
         }
         return ret;
