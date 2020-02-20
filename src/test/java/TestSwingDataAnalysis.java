@@ -38,6 +38,14 @@ public class TestSwingDataAnalysis {
     }
 
     @Test
+    public void testContinutySearchAboveValueLessThanWinLength() throws IOException
+    {
+        Assert.assertEquals(
+            Analysis.searchContinuityAboveValue(swing.ay, 0, 1276, 1, 30),
+            760);
+    }
+
+    @Test
     public void testSearchContinuityAboveValueBeginning() throws IOException
     {
         Assert.assertEquals(

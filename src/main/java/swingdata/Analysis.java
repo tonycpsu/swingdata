@@ -51,7 +51,12 @@ public class Analysis {
 
             // for each starting index, iterate through the window size
             for (int j = 0; j < winLength; j++) {
-                if (data.get(i+j) <= threshold) continue window;
+                if (data.get(i+j) <= threshold)
+                {
+                    // advance window, skipping non-matching data in this window
+                    i += j;
+                    continue window;
+                }
             }
             return i;
         }
@@ -76,7 +81,13 @@ public class Analysis {
             for (int j = 0; j < winLength; j++) {
                 // if value at index within window is lower or higher than
                 // specified thresholds, skip to next window
-                if (data.get(i-j-1) <= thresholdLo || data.get(i-j) >= thresholdHi ) continue window;
+                if (data.get(i-j-1) <= thresholdLo
+                    || data.get(i-j) >= thresholdHi
+                    ) {
+                    // advance window, skipping non-matching data in this window
+                    i -= j;
+                    continue window;
+                }
             }
             // this window is good, return the first index
             return i-winLength;
@@ -101,7 +112,11 @@ public class Analysis {
             // for each starting index, iterate through the window size
             for (int j = 0; j < winLength; j++) {
                 if (data1.get(i+j) <= threshold1
-                    || data2.get(i+j) <= threshold2) continue window;
+                    || data2.get(i+j) <= threshold2) {
+                    // advance window, skipping non-matching data in this window
+                    i += j;
+                    continue window;
+                }
             }
             return i;
         }
