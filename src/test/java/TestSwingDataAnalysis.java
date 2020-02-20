@@ -1,8 +1,10 @@
 package org.tonyc.swingdata.test;
 
-import org.testng.annotations.*;
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeClass;
 import org.testng.Assert;
 import java.io.*;
+import java.util.Optional;
 
 import org.tonyc.swingdata.SwingData;
 import org.tonyc.swingdata.Analysis;
@@ -25,15 +27,16 @@ public class TestSwingDataAnalysis {
     {
         Assert.assertEquals(
             Analysis.searchContinuityAboveValue(swing.wy, 0, 14, -15.0, 5),
-            6);
+            Optional.of(6));
 
         Assert.assertEquals(
             Analysis.searchContinuityAboveValue(swing.wx, 0, 14, 3, 15),
-            0);
+            Optional.of(0));
 
         Assert.assertEquals(
             Analysis.searchContinuityAboveValue(swing.ay, 0, 0, 0, 1),
-            0);
+            Optional.of(0));
+
 
     }
 
@@ -42,7 +45,7 @@ public class TestSwingDataAnalysis {
     {
         Assert.assertEquals(
             Analysis.searchContinuityAboveValue(swing.ay, 0, 1276, 1, 30),
-            760);
+            Optional.of(760));
     }
 
     @Test
@@ -50,7 +53,7 @@ public class TestSwingDataAnalysis {
     {
         Assert.assertEquals(
             Analysis.searchContinuityAboveValue(swing.ay, 0, 14, 0.23, 5),
-            0);
+            Optional.of(0));
 
     }
 
@@ -59,7 +62,7 @@ public class TestSwingDataAnalysis {
     {
         Assert.assertEquals(
             Analysis.searchContinuityAboveValue(swing.wz, 0, 14, -5.2, 5),
-            10);
+            Optional.of(10));
 
     }
 
@@ -68,7 +71,7 @@ public class TestSwingDataAnalysis {
     {
         Assert.assertEquals(
             Analysis.searchContinuityAboveValue(swing.wz, 0, 14, -5.2, 6),
-            -1);
+            Optional.empty());
 
     }
 
@@ -77,7 +80,7 @@ public class TestSwingDataAnalysis {
     {
         Assert.assertEquals(
             Analysis.searchContinuityAboveValue(swing.wy, 0, 14, 100, 5),
-            -1);
+            Optional.empty());
     }
 
     @Test(expectedExceptions = IOException.class)
@@ -92,15 +95,15 @@ public class TestSwingDataAnalysis {
     {
         Assert.assertEquals(
             Analysis.backSearchContinuityWithinRange(swing.wx, 14, 0, 4, 4.5, 5),
-            8);
+            Optional.of(8));
 
         Assert.assertEquals(
             Analysis.backSearchContinuityWithinRange(swing.az, 14, 0, -1, 0, 3),
-            4);
+            Optional.of(4));
 
         Assert.assertEquals(
             Analysis.backSearchContinuityWithinRange(swing.wx, 14, 0, 4.8, 5.0, 1),
-            0);
+            Optional.of(0));
     }
 
 
@@ -109,7 +112,7 @@ public class TestSwingDataAnalysis {
     {
         Assert.assertEquals(
             Analysis.backSearchContinuityWithinRange(swing.wy, 14, 0, 1, 2, 5),
-            -1);
+            Optional.empty());
 
     }
 
@@ -118,7 +121,7 @@ public class TestSwingDataAnalysis {
     {
         Assert.assertEquals(
             Analysis.backSearchContinuityWithinRange(swing.wy, 14, 0, 1, 2, 5),
-            -1);
+            Optional.empty());
     }
 
     @Test
@@ -127,12 +130,12 @@ public class TestSwingDataAnalysis {
         Assert.assertEquals(
             Analysis.searchContinuityAboveValueTwoSignals(
                 swing.ax, swing.ay, 0, 14, -1, 0.3, 5),
-            4);
+            Optional.of(4));
 
         Assert.assertEquals(
             Analysis.searchContinuityAboveValueTwoSignals(
                 swing.ay, swing.wy, 0, 14, 0.4, -14.5, 5),
-            9);
+            Optional.of(9));
 
     }
 

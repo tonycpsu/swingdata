@@ -37,7 +37,7 @@ public class Analysis {
 
     }
 
-    public static int searchContinuityAboveValue(
+    public static Optional<Integer> searchContinuityAboveValue(
         ArrayList<Double> data,
         int indexBegin,
         int indexEnd,
@@ -48,7 +48,6 @@ public class Analysis {
       window:
         // iterate through the input data, stop when window hits the end
         for (int i = indexBegin; i <= indexEnd - winLength +1; i++) {
-
             // for each starting index, iterate through the window size
             for (int j = 0; j < winLength; j++) {
                 if (data.get(i+j) <= threshold)
@@ -58,13 +57,13 @@ public class Analysis {
                     continue window;
                 }
             }
-            return i;
+            return Optional.of(i);
         }
-        return -1;
+        return Optional.empty();
     }
 
 
-    public static int backSearchContinuityWithinRange(
+    public static Optional<Integer> backSearchContinuityWithinRange(
         ArrayList<Double> data,
         int indexBegin,
         int indexEnd,
@@ -90,13 +89,13 @@ public class Analysis {
                 }
             }
             // this window is good, return the first index
-            return i-winLength;
+            return Optional.of(i - winLength);
         }
-        return -1;
+        return Optional.empty();
     }
 
 
-    public static int searchContinuityAboveValueTwoSignals(
+    public static Optional<Integer> searchContinuityAboveValueTwoSignals(
         ArrayList<Double> data1,
         ArrayList<Double> data2,
         int indexBegin,
@@ -118,9 +117,9 @@ public class Analysis {
                     continue window;
                 }
             }
-            return i;
+            return Optional.of(i);
         }
-        return -1;
+        return Optional.empty();
 
     }
 
