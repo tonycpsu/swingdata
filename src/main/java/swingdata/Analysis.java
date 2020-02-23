@@ -2,129 +2,136 @@ package org.tonyc.swingdata;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class Analysis {
 
-    public static void main(String[] args) throws IOException {
-
-        if (args.length != 1) {
-            System.out.println("missing required CSV file argument");
-            System.exit(1);
-        }
-
-        SwingData swing = SwingData.fromCSV(args[0]);
-        System.out.println(
-            searchContinuityAboveValue(swing.wy, 2, 12, -15.0, 5)
-        );
-
-        System.out.println(
-            backSearchContinuityWithinRange(swing.wx, 14, 0, 4, 4.5, 5)
-        );
-
-        System.out.println(
-            searchContinuityAboveValueTwoSignals(
-                swing.ax, swing.ay, 0, 14, -1, 0.3, 5
-            )
-        );
-
-        System.out.println(
-            Arrays.toString(
-                searchMultiContinuityWithinRange(
-                    swing.az, 0, 14, -1, 0, 1
-                ).toArray()
-            )
-        );
-
-    }
-
-    public static Optional<Integer> searchContinuityAboveValue(
-        ArrayList<Double> data,
+    /**
+     * Helper function for finding continuous samples in one or more metrics
+     * matching one or more predicates.
+     *
+     * @param metrics list containing one or more lists of metrics to be tested
+     *
+     * @param conditions list containing one or more predicate functions used to
+     * determine criteria for what defines a continuity.  The Nth predicate is
+     * used to test elements in the Nth list in {@code metrics}, so the lengths
+     * of these two lists must be equal.
+     *
+     * @param indexBegin beginning index of range to search
+     *
+     * @param indexEnd end index of range to search
+     *
+     * @param winLength number of samples to pass the given criteria in order to
+     * be considered a continuity
+     *
+     * @param reverse if true, search from end of range to beginning
+     *
+     * @return Optional integer of beginning of continuity, or empty
+     */
+    public static Optional<Integer> findContinuities(
+        List<List<Double>> metrics,
+        List<Predicate<Double>> conditions,
         int indexBegin,
         int indexEnd,
-        double threshold,
-        int winLength)
+        int winLength,
+        boolean reverse)
     {
+        int step = reverse ? -1 : 1;
+
+        assert(metrics.size() == conditions.size());
 
       window:
-        // iterate through the input data, stop when window hits the end
-        for (int i = indexBegin; i <= indexEnd - winLength +1; i++) {
-            // for each starting index, iterate through the window size
+        for (int i = indexBegin;
+             reverse ? i >= indexEnd + winLength : i <= indexEnd - winLength + 1;
+             i += step) {
+
             for (int j = 0; j < winLength; j++) {
-                if (data.get(i+j) <= threshold)
-                {
-                    // advance window, skipping non-matching data in this window
-                    i += j;
-                    continue window;
+
+                for (int m = 0; m < metrics.size(); m++) {
+                    if (! conditions.get(m)
+                        .test(metrics.get(m).get(reverse ? i-j-1: i+j)))
+                    {
+                        // advance window to avoid unnecessary tests
+                        i += ( reverse ? -j : j );
+                        continue window;
+                    }
                 }
             }
-            return Optional.of(i);
+            return Optional.of(reverse ? i - winLength : i);
         }
         return Optional.empty();
     }
 
 
+    public static Optional<Integer> findContinuities(
+        List<List<Double>> metrics,
+        List<Predicate<Double>> conditions,
+        int indexBegin,
+        int indexEnd,
+        int winLength)
+    {
+        return findContinuities(
+            metrics, conditions,
+            indexBegin, indexEnd, winLength,
+            false);
+    }
+
+    // API functions
+
+    public static Optional<Integer> searchContinuityAboveValue(
+        List<Double> data,
+        int indexBegin,
+        int indexEnd,
+        double threshold,
+        int winLength)
+    {
+        return findContinuities(
+            List.of(data),
+            List.of( v -> v > threshold),
+            indexBegin,
+            indexEnd,
+            winLength
+        );
+    }
+
+
     public static Optional<Integer> backSearchContinuityWithinRange(
-        ArrayList<Double> data,
+        List<Double> data,
         int indexBegin,
         int indexEnd,
         double thresholdLo,
         double thresholdHi,
         int winLength)
     {
-
-      window:
-        // iterate through the input data, stop when window hits the beginning
-        for (int i = indexBegin; i >= indexEnd + winLength; i--) {
-
-            // for each starting index, iterate through the window size
-            for (int j = 0; j < winLength; j++) {
-                // if value at index within window is lower or higher than
-                // specified thresholds, skip to next window
-                if (data.get(i-j-1) <= thresholdLo
-                    || data.get(i-j) >= thresholdHi
-                    ) {
-                    // advance window, skipping non-matching data in this window
-                    i -= j;
-                    continue window;
-                }
-            }
-            // this window is good, return the first index
-            return Optional.of(i - winLength);
-        }
-        return Optional.empty();
+        return findContinuities(
+            List.of(data),
+            List.of( v -> v > thresholdLo && v < thresholdHi),
+            indexBegin, indexEnd, winLength,
+            true);
     }
 
-
-    public static Optional<Integer> searchContinuityAboveValueTwoSignals(
-        ArrayList<Double> data1,
-        ArrayList<Double> data2,
+   public static Optional<Integer> searchContinuityAboveValueTwoSignals(
+        List<Double> data1,
+        List<Double> data2,
         int indexBegin,
         int indexEnd,
         double threshold1,
         double threshold2,
         int winLength)
-    {
-      window:
-        // iterate through the input data, stop when window hits the end
-        for (int i = indexBegin; i <= indexEnd - winLength +1; i++) {
 
-            // for each starting index, iterate through the window size
-            for (int j = 0; j < winLength; j++) {
-                if (data1.get(i+j) <= threshold1
-                    || data2.get(i+j) <= threshold2) {
-                    // advance window, skipping non-matching data in this window
-                    i += j;
-                    continue window;
-                }
-            }
-            return Optional.of(i);
-        }
-        return Optional.empty();
+    {
+        return findContinuities(
+            List.of(data1, data2),
+            List.of( v -> v > threshold1, v -> v > threshold2),
+            indexBegin,
+            indexEnd,
+            winLength
+        );
 
     }
 
     public static List<List<Integer>> searchMultiContinuityWithinRange(
-        ArrayList<Double> data,
+        List<Double> data,
         int indexBegin,
         int indexEnd,
         double thresholdLo,
@@ -154,7 +161,38 @@ public class Analysis {
             }
         }
         return ret;
-
-
     }
+
+    public static void main(String[] args) throws IOException {
+
+        if (args.length != 1) {
+            System.out.println("missing required CSV file argument");
+            System.exit(1);
+        }
+
+        var swing = SwingData.fromCSV(args[0]);
+
+        System.out.println(
+            searchContinuityAboveValue(swing.wy, 2, 12, -15.0, 5)
+        );
+
+        System.out.println(
+            backSearchContinuityWithinRange(swing.wx, 14, 0, 4, 4.5, 5)
+        );
+
+        System.out.println(
+            searchContinuityAboveValueTwoSignals(
+                swing.ax, swing.ay, 0, 14, -1, 0.3, 5
+            )
+        );
+
+        System.out.println(
+            Arrays.toString(
+                searchMultiContinuityWithinRange(
+                    swing.az, 0, 14, -1, 0, 1
+                ).toArray()
+            )
+        );
+    }
+
 }

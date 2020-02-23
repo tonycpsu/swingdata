@@ -23,6 +23,7 @@ public class TestSwingDataAnalysis {
             .getFile());
     }
 
+
     @Test
     public void testSearchContinuityAboveValue() throws IOException
     {
@@ -92,7 +93,7 @@ public class TestSwingDataAnalysis {
 
 
     @Test
-    public void backSearchContinuityWithinRange() throws IOException
+    public void testBackSearchContinuityWithinRange() throws IOException
     {
         Assert.assertEquals(
             Analysis.backSearchContinuityWithinRange(swing.wx, 14, 0, 4, 4.5, 5),
@@ -109,7 +110,7 @@ public class TestSwingDataAnalysis {
 
 
     @Test
-    public void backSearchContinuityWithinRangeNoResults() throws IOException
+    public void testBackSearchContinuityWithinRangeNoResults() throws IOException
     {
         Assert.assertEquals(
             Analysis.backSearchContinuityWithinRange(swing.wy, 14, 0, 1, 2, 5),
@@ -118,7 +119,7 @@ public class TestSwingDataAnalysis {
     }
 
     @Test
-    public void backSearchContinuityWithinRangeBegin() throws IOException
+    public void testBackSearchContinuityWithinRangeBegin() throws IOException
     {
         Assert.assertEquals(
             Analysis.backSearchContinuityWithinRange(swing.wy, 14, 0, 1, 2, 5),

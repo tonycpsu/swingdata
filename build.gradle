@@ -12,6 +12,12 @@ jar {
 
 mainClassName = "org.tonyc.swingdata.Analysis"
 
+
+javadoc {
+    source = sourceSets.main.allJava
+    classpath = configurations.compile
+}
+
 sourceCompatibility = 10
 targetCompatibility = 10
 
